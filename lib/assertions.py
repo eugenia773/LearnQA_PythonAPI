@@ -55,3 +55,8 @@ class Assertions:
 
         for name in names:
             assert name not in response_as_dict, f"Response JSON should not have key '{name}', but it is present"
+
+    @staticmethod
+    def assert_response_text(response: Response, expected_text):
+        assert response.text == expected_text, \
+            f"Unexpected response text. Expected: {expected_text}, Actual: {response.text}"
