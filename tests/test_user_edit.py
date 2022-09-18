@@ -1,9 +1,15 @@
+import allure
+import time
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
 
+@allure.epic("Edit user cases")
 class TestUserEdit(BaseCase):
+    @allure.description("This test checks just created user can be edited")
+    @allure.severity(severity_level="Critical")
+    @allure.tag("Smoke")
     def test_edit_just_created_user(self):
         # Register
         register_data = self.prepare_registration_data()
@@ -53,6 +59,9 @@ class TestUserEdit(BaseCase):
         )
 
     # Тест на изменение данных (fisrtName) пользователя неавторизованным пользователем
+    @allure.description("This test checks user data can't be edited from unauthorized user")
+    @allure.severity(severity_level="Critical")
+    @allure.tag("Smoke")
     def test_edit_user_from_not_auth(self):
         # Register
         register_data = self.prepare_registration_data()
@@ -74,6 +83,9 @@ class TestUserEdit(BaseCase):
         Assertions.assert_response_text(response2, "Auth token not supplied")
 
     # Тест на изменение данных (firstName) пользователя другим авторизованным пользователем
+    @allure.description("This test checks user data can't be edited from another authorized user")
+    @allure.severity(severity_level="Critical")
+    @allure.tag("Smoke")
     def test_edit_user_from_another_auth_user(self):
         # Register user 1
         register_data1 = self.prepare_registration_data()
@@ -84,6 +96,8 @@ class TestUserEdit(BaseCase):
 
         email1 = register_data1['email']
         password1 = register_data1['password']
+
+        time.sleep(1)
 
         # Register user 2
         register_data2 = self.prepare_registration_data()
@@ -141,6 +155,8 @@ class TestUserEdit(BaseCase):
                                              f"Wrong user name. Expected: {expected_name}, Actual: {actual_name}")
 
     # Тест на изменение email пользователя (email не валиден - без @)
+    @allure.description("This test checks new email can't be invalid - without @ symbol")
+    @allure.severity(severity_level="Normal")
     def test_edit_user_wrong_email(self):
         # Register
         register_data = self.prepare_registration_data()
@@ -176,6 +192,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_response_text(response3, "Invalid email format")
 
     # Тест на изменение имени (firstName) пользователя (имя не валидно - 1 символ)
+    @allure.description("This test checks new firstName user can't contain the only symbol")
+    @allure.severity(severity_level="Minor")
     def test_edit_user_short_name(self):
         # Register
         register_data = self.prepare_registration_data()

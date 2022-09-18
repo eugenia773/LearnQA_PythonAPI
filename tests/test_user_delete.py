@@ -1,10 +1,15 @@
+import allure
+import time
 from lib.my_requests import MyRequests
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
 
 
+@allure.epic("Delete user cases")
 class TestUserDelete(BaseCase):
     # Тест на удаление пользователя id = 2
+    @allure.description("This test checks that user with id=2 can't be removed")
+    @allure.severity(severity_level="Normal")
     def test_delete_user_id2(self):
         # Login
         login_data = {
@@ -30,6 +35,9 @@ class TestUserDelete(BaseCase):
         Assertions.assert_response_text(response2, "Please, do not delete test users with ID 1, 2, 3, 4 or 5.")
 
     # Тест на удаление только что созданного пользователя
+    @allure.description("This test checks that created user can be removed")
+    @allure.severity(severity_level="CRITICAL")
+    @allure.tag("Smoke")
     def test_delete_user_created(self):
         # Register
         register_data = self.prepare_registration_data()
@@ -72,6 +80,8 @@ class TestUserDelete(BaseCase):
         Assertions.assert_response_text(response4, "User not found")
 
     # Тест на удаление пользователя другим авторизованным пользователем
+    @allure.description("This test checks that user can't be removed by another user")
+    @allure.severity(severity_level="Normal")
     def test_delete_user_from_another_user(self):
         # Register user 1
         register_data1 = self.prepare_registration_data()
@@ -82,6 +92,8 @@ class TestUserDelete(BaseCase):
 
         email1 = register_data1['email']
         password1 = register_data1['password']
+
+        time.sleep(1)
 
         # Register user 2
         register_data2 = self.prepare_registration_data()

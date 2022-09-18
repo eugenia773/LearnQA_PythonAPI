@@ -1,12 +1,14 @@
 import string
 import pytest
 import random
+import allure
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from datetime import datetime
 
 
+@allure.epic("Register user cases")
 class TestUserRegister(BaseCase):
     exclude_params = [
         "username",
@@ -27,12 +29,18 @@ class TestUserRegister(BaseCase):
         random_part = datetime.now().strftime("%m%d%Y%H%M%S")
         self.email = f"{base_part}{random_part}@{domain}"
 
+    @allure.description("This test checks user registration")
+    @allure.severity(severity_level="Blocker")
+    @allure.tag("Smoke")
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
         response = MyRequests.post("/user/", data=data)
         Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
 
+    @allure.description("This test checks user with existing email can't be created")
+    @allure.severity(severity_level="Blocker")
+    @allure.tag("Smoke")
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
@@ -41,6 +49,8 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"Users with email '{email}' already exists", \
             f"Unexpected response content {response.content}"
 
+    @allure.description("This test checks user with invalid email can't be created")
+    @allure.severity(severity_level="Normal")
     def test_create_user_with_invalid_email(self):
         base_part = "learnqa"
         domain = "example.com"
@@ -61,6 +71,9 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == "Invalid email format", \
             f"Unexpected response content {response.content}"
 
+    @allure.description("This test checks user without one filed can't be created")
+    @allure.severity(severity_level="Critical")
+    @allure.tag("Smoke")
     @pytest.mark.parametrize('condition', exclude_params)
     def test_create_user_without_one_field(self, condition):
         if condition == "username":
@@ -107,6 +120,8 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"The following required params are missed: {condition}", \
             f"Unexpected response content {response.content}"
 
+    @allure.description("This test checks user with invalid length username can't be created")
+    @allure.severity(severity_level="Normal")
     @pytest.mark.parametrize('condition', len_username)
     def test_create_user_with_wrong_size_username(self, condition):
         if condition == "symbol_1":
